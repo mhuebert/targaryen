@@ -195,8 +195,9 @@ describe('Ruleset', function() {
 
     it('should fail on error in validate', function() {
       var root = new RuleDataSnapshot(RuleDataSnapshot.convert({'a': 1})),
-          rules = new Ruleset({rules: {".write": "true", "a": {".validate": "auth.x === data.val()"}}}),
+          rules = new Ruleset({rules: {".write": "true", "a": {".validate": "auth.notAFunction() === false"}}}),
           result = rules.tryWrite('/a', root, 2, {});
+      console.log(result)
       expect(result.allowed).to.be.false
     });
 
