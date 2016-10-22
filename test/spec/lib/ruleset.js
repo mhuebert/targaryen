@@ -191,6 +191,24 @@ describe('Ruleset', function() {
 
   });
 
+  describe('rule evaluation', function(){
+
+    it('should fail on error in validate', function() {
+      var root = new RuleDataSnapshot(RuleDataSnapshot.convert({'a': 1})),
+          rules = new Ruleset({rules: {".write": "true", "a": {".validate": "auth.x === data.val()"}}}),
+          result = rules.tryWrite('/a', root, 2, {});
+      expect(result.allowed).to.be.false
+    });
+
+    it('should treat nonexistent properties of "auth" as null', function(){
+      var root = new RuleDataSnapshot(RuleDataSnapshot.convert({'a': 1})),
+          rules = new Ruleset({rules: {'.write': 'auth.x === null'}}),
+          result = rules.tryWrite('/a', root, 2, {});
+      expect(result.allowed).to.be.true
+    });
+
+  });
+
   describe('#get', function() {
 
     it('gets all the rules along a given node path', function() {
