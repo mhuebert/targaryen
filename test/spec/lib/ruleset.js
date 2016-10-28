@@ -283,6 +283,27 @@ describe('Ruleset', function() {
 
     });
 
+    it('RomansBermans test, issue 45', function() {
+      var root = new RuleDataSnapshot(RuleDataSnapshot.convert({'technicians': {'123': true}})),
+          rules1 = new Ruleset({rules: {"orders": {".read": "root.child('technicians').child(auth.uid).val() != null || auth.uid == 'server'"}}}),
+          rules2 = new Ruleset({rules: {"orders": {".read": "root.child('technicians'+'/'+auth.uid).val() != null || auth.uid == 'server'"}}});
+
+
+      // fails
+      expect(rules1.tryRead('/orders', root, {}).allowed).to.be.false;
+
+      // passes
+      expect(rules2.tryRead('/orders', root, {}).allowed).to.be.false;
+
+
+      // the following tests behave as expected
+      // expect(rules1.tryRead('/orders', root, {uid: 'server'}).allowed).to.be.true;
+      // expect(rules1.tryRead('/orders', root, {uid: '123'}).allowed).to.be.true;
+      // expect(rules2.tryRead('/orders', root, {uid: 'server'}).allowed).to.be.true;
+      // expect(rules2.tryRead('/orders', root, {uid: '123'}).allowed).to.be.true;
+
+    });
+
   });
 
 
